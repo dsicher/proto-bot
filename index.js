@@ -77,12 +77,11 @@ function rollCall(bot, incomingMessage) {
 }
 botListener.hears(['rise and shine', 'roll call$', 'role call$'], untaggedMessage, rollCall);
 
-/*-----------------------------------------------------------------------------------------------------------
-//
-//                                         !BOILER-PLATE OVER!
-//                                           INSERT BOT HERE
-//
-//                                            | | | | | | |
-//                                            V V V V V V V
-//
-//---------------------------------------------------------------------------------------------------------*/
+module.exports = {
+  botName: botName,
+  botTriggers: botTriggers,
+  taggedMessage: taggedMessage,
+  untaggedMessage: untaggedMessage,
+  botListener: botListener,
+  bot: bot
+}
