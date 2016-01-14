@@ -47,58 +47,72 @@ var noDoze = function() {
       };
     }, 300000)
   }
-}();
+};
 
-var botListener = Botkit.slackbot({
-    debug: true,
-});
+var protoBot = function() {
+  this.botName = 'proto-bot';
+  this.botTriggers = [];
 
-var bot = botListener.spawn({
-    token: process.env.token
-}).startRTM();
+  this.taggedMessage = 'direct_message,direct_mention,mention';
+  this.untaggedMessage = 'direct_message,direct_mention,mention,ambient';
 
-botListener.setupWebserver(process.env.PORT,function(err,express_webserver) {
-  botListener.createWebhookEndpoints(express_webserver);
-});
+  noDoze();
 
-var taggedMessage = 'direct_message,direct_mention,mention';
-var untaggedMessage = 'direct_message,direct_mention,mention,ambient';
+  this.botListener = Botkit.slackbot({
+      debug: true,
+  });
 
-var addTriggers = function(trigger) {
+  this.bot = this.botListener.spawn({
+      token: process.env.token
+  }).startRTM();
+
+  this.botListener.setupWebserver(process.env.PORT,function(err,express_webserver) {
+    this.botListener.createWebhookEndpoints(express_webserver);
+  }.bind(this));
+
+  this.addUntaggedTrigger(['rise and shine', 'roll call$', 'role call$'], this.rollCall.bind(this));
+  this.addUntaggedTrigger(['help'], this.listFunctions.bind(this));
+}
+
+protoBot.prototype.addTriggers = function(trigger) {
   if(Array.isArray(trigger)) {
-    trigger.forEach(function(el){addTriggers(el);});
+    trigger.forEach(function(el){this.addTriggers(el);}.bind(this));
   } else if(typeof(trigger)=='string'){
-    botTriggers.push(trigger);
+    this.botTriggers.push(trigger);
   } else {
     console.log('error: ' + trigger + ' could not be added to the list of triggers');
   }
 }
 
-addTriggers(['help', 'roll call', 'role call']);
-
-var renameBot = function(name) {
-  if(typeof(name)=='string'){
-    botName = name;
+protoBot.prototype.addTaggedTrigger = function(listenFor, action) {
+  if(Array.isArray(listenFor) && typeof action==='function') {
+    this.addTriggers(listenFor);
+    this.botListener.hears(listenFor, this.taggedMessage, action)
   } else {
-    console.log('error: ' + name + ' could not be used as a bot name');
+    console.log('error: tagged trigger could not be added');
   }
 }
 
-function listFunctions(bot, incomingMessage) {
-  bot.reply(incomingMessage, 'I respond to the following commands: `' + botTriggers.join("`, `") + '`');
+protoBot.prototype.addUntaggedTrigger = function(listenFor, action) {
+  if(Array.isArray(listenFor) && typeof action==='function') {
+    this.addTriggers(listenFor);
+    this.botListener.hears(listenFor, this.untaggedMessage, action)
+  } else {
+    console.log('error: untagged trigger could not be added');
+  }
 }
-botListener.hears(['help'], taggedMessage, listFunctions);
 
-function rollCall(bot, incomingMessage) {
-  bot.reply(incomingMessage, botName + ' present');
-}
-botListener.hears(['rise and shine', 'roll call$', 'role call$'], untaggedMessage, rollCall);
 
-module.exports = {
-  renameBot: renameBot,
-  addTriggers: addTriggers,
-  taggedMessage: taggedMessage,
-  untaggedMessage: untaggedMessage,
-  botListener: botListener,
-  bot: bot
+protoBot.prototype.rollCall = function(bot, incomingMessage) {
+  bot.reply(incomingMessage, this.rollCallResponse());
 }
+
+protoBot.prototype.rollCallResponse = function() {
+  return 'proto-bot is alive';
+}
+
+protoBot.prototype.listFunctions = function(bot, incomingMessage) {
+  bot.reply(incomingMessage, 'I respond to the following commands: `' + this.botTriggers.join("`, `") + '`');
+}
+
+module.exports = protoBot;
