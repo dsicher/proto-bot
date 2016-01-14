@@ -52,7 +52,8 @@ var noDoze = function() {
 var protoBot = function(config) {
   var defaults =  {
     botName: 'proto-bot',
-    debug: true
+    debug: true,
+    port: process.env.PORT || 8080
   };
 
   this.config = Object.assign({}, defaults, config);
@@ -74,7 +75,7 @@ var protoBot = function(config) {
     token: process.env.token
   }).startRTM();
 
-  this.botListener.setupWebserver(process.env.PORT,function(err,express_webserver) {
+  this.botListener.setupWebserver(this.config.port,function(err,express_webserver) {
     this.botListener.createWebhookEndpoints(express_webserver);
   }.bind(this));
 
