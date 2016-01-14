@@ -68,6 +68,8 @@ var protoBot = function(config) {
     debug: this.config.debug,
   });
 
+  this.botListener.on('tick', function() {});
+
   this.bot = this.botListener.spawn({
     token: process.env.token
   }).startRTM();
