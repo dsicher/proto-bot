@@ -76,6 +76,14 @@ var addTriggers = function(trigger) {
 
 addTriggers(['help', 'roll call', 'role call']);
 
+var renameBot = function(name) {
+  if(typeof(name)=='string'){
+    botName = name;
+  } else {
+    console.log('error: ' + name + ' could not be used as a bot name');
+  }
+}
+
 function listFunctions(bot, incomingMessage) {
   bot.reply(incomingMessage, 'I respond to the following commands: `' + botTriggers.join("`, `") + '`');
 }
@@ -87,7 +95,7 @@ function rollCall(bot, incomingMessage) {
 botListener.hears(['rise and shine', 'roll call$', 'role call$'], untaggedMessage, rollCall);
 
 module.exports = {
-  botName: botName,
+  renameBot: renameBot,
   addTriggers: addTriggers,
   taggedMessage: taggedMessage,
   untaggedMessage: untaggedMessage,
