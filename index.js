@@ -18,7 +18,6 @@ var botTriggers = ['help',
 
 var http = require('http');
 var Botkit = require('botkit');
-var os = require('os');
 
 require('dotenv').load();
 
@@ -71,12 +70,12 @@ var untaggedMessage = 'direct_message,direct_mention,mention,ambient';
 function listFunctions(bot, incomingMessage) {
   bot.reply(incomingMessage, 'I respond to the following commands: `' + botTriggers.join("`, `") + '`');
 }
-botListener.hears(['help'], untaggedMessage, listFunctions);
+botListener.hears(['help'], taggedMessage, listFunctions);
 
 function rollCall(bot, incomingMessage) {
   bot.reply(incomingMessage, botName + ' present');
 }
-botListener.hears(['roll call','role call'], untaggedMessage, rollCall);
+botListener.hears(['rise and shine', 'roll call$', 'role call$'], untaggedMessage, rollCall);
 
 /*-----------------------------------------------------------------------------------------------------------
 //
