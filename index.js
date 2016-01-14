@@ -5,10 +5,7 @@
 //---------------------------------------------------------------------------------------------------------*/
 
 var botName = 'proto-bot';
-var botTriggers = ['help',
-                   'roll call',
-                   'role call'
-                  ];
+var botTriggers = [];
 
 /*-----------------------------------------------------------------------------------------------------------
 //
@@ -67,6 +64,18 @@ botListener.setupWebserver(process.env.PORT,function(err,express_webserver) {
 var taggedMessage = 'direct_message,direct_mention,mention';
 var untaggedMessage = 'direct_message,direct_mention,mention,ambient';
 
+var addTriggers = function(trigger) {
+  if(Array.isArray(trigger)) {
+    trigger.forEach(function(el){addTriggers(el);});
+  } else if(typeof(trigger)=='string'){
+    botTriggers.push(trigger);
+  } else {
+    console.log('error: ' + trigger + ' could not be added to the list of triggers');
+  }
+}
+
+addTriggers(['help', 'roll call', 'role call']);
+
 function listFunctions(bot, incomingMessage) {
   bot.reply(incomingMessage, 'I respond to the following commands: `' + botTriggers.join("`, `") + '`');
 }
@@ -79,7 +88,7 @@ botListener.hears(['rise and shine', 'roll call$', 'role call$'], untaggedMessag
 
 module.exports = {
   botName: botName,
-  botTriggers: botTriggers,
+  addTriggers: addTriggers,
   taggedMessage: taggedMessage,
   untaggedMessage: untaggedMessage,
   botListener: botListener,
