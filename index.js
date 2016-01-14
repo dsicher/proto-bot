@@ -77,7 +77,7 @@ var protoBot = function(config) {
   }.bind(this));
 
   this.addUntaggedTrigger(['rise and shine', 'roll call$', 'role call$'], this.rollCall.bind(this));
-  this.addUntaggedTrigger(['help'], this.listFunctions.bind(this));
+  this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
 }
 
 protoBot.prototype.addTriggers = function(trigger) {
