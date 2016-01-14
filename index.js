@@ -49,8 +49,14 @@ var noDoze = function() {
   }
 };
 
-var protoBot = function() {
-  this.botName = 'proto-bot';
+var protoBot = function(config) {
+  var defaults =  {
+    botName: 'proto-bot',
+    debug: true
+  };
+
+  this.config = Object.assign({}, defaults, config);
+  this.botName = this.config.botName;
   this.botTriggers = [];
 
   this.taggedMessage = 'direct_message,direct_mention,mention';
@@ -59,11 +65,11 @@ var protoBot = function() {
   noDoze();
 
   this.botListener = Botkit.slackbot({
-      debug: true,
+    debug: this.config.debug,
   });
 
   this.bot = this.botListener.spawn({
-      token: process.env.token
+    token: process.env.token
   }).startRTM();
 
   this.botListener.setupWebserver(process.env.PORT,function(err,express_webserver) {
