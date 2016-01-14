@@ -1,6 +1,6 @@
 {
   "name": "proto-bot",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A prototype chatbot, using the botkit API",
   "main": "index.js",
   "repository": "https://github.com/davidsicher/proto-bot",
