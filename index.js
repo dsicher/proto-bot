@@ -1,14 +1,5 @@
 /*-----------------------------------------------------------------------------------------------------------
 //
-//                                        SIMPLE PROTO CONFIGS
-//
-//---------------------------------------------------------------------------------------------------------*/
-
-var botName = 'proto-bot';
-var botTriggers = [];
-
-/*-----------------------------------------------------------------------------------------------------------
-//
 //                                        Proto-bot Boilerplate
 //
 //---------------------------------------------------------------------------------------------------------*/
@@ -53,7 +44,7 @@ var protoBot = function(config) {
   var defaults =  {
     botName: 'proto-bot',
     debug: true,
-    port: process.env.PORT || 8080
+    port: process.env.PORT || 8080,
   };
 
   this.config = Object.assign({}, defaults, config);
@@ -65,9 +56,7 @@ var protoBot = function(config) {
 
   noDoze();
 
-  this.botListener = Botkit.slackbot({
-    debug: this.config.debug,
-  });
+  this.botListener = Botkit.slackbot(this.config);
 
   this.botListener.on('tick', function() {});
 
