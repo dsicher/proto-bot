@@ -15,18 +15,18 @@ if (!process.env.token) {
   process.exit(1);
 }
 
-var keepAliveFunc = function() {
-  http.get(process.env.KEEPALIVE_URL, function(res) {
+var keepAliveFunc = () => {
+  http.get(process.env.KEEPALIVE_URL, (res) => {
     console.log(`Keep alive response: ${res.statusCode}`);
-  }).on('error', function(e) {
+  }).on('error', (e) => {
     console.log(`Got error: ${e.message}`);
   });
 }
 
-var noDoze = function() {
+var noDoze = () => {
   if (keepAliveIntervalId === undefined) {
     keepAliveFunc();
-    var keepAliveIntervalId = setInterval(function() {
+    var keepAliveIntervalId = setInterval(() => {
       var date = new Date();
       console.log(`Current hour of the day is: ${date.getHours()}`);
       if (date.getHours() > 22) {
@@ -58,15 +58,15 @@ class ProtoBot {
 
     this.port = process.env.PORT || 8080;
 
-    this.botListener.on('tick', function() {});
+    this.botListener.on('tick', () => {});
 
     this.bot = this.botListener.spawn({
       token: process.env.token
     }).startRTM();
 
-    this.botListener.setupWebserver(this.port, function(err,express_webserver) {
+    this.botListener.setupWebserver(this.port, (err,express_webserver) => {
       this.botListener.createWebhookEndpoints(express_webserver);
-    }.bind(this));
+    });
 
     this.addUntaggedTrigger(['rise and shine', 'roll call$', 'role call$'], this.rollCall.bind(this));
     this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
@@ -74,7 +74,7 @@ class ProtoBot {
 
   addTriggers(trigger) {
     if(Array.isArray(trigger)) {
-      trigger.forEach(function(el){this.addTriggers(el);}.bind(this));
+      trigger.forEach((el)=>{this.addTriggers(el);});
     } else if(typeof(trigger)=='string'){
       this.botTriggers.push(trigger);
     } else {
@@ -119,9 +119,9 @@ class ProtoBot {
   }
 
   keepAliveFunc() {
-    http.get(process.env.KEEPALIVE_URL, function(res) {
+    http.get(process.env.KEEPALIVE_URL, (res) => {
       console.log(`Keep alive response: ${res.statusCode}`);
-    }).on('error', function(e) {
+    }).on('error', (e) => {
       console.log(`Got error: ${e.message}`);
     });
   }
@@ -129,7 +129,7 @@ class ProtoBot {
   noDoze() {
     if (this.keepAliveIntervalId === undefined) {
       this.keepAliveFunc();
-      this.keepAliveIntervalId = setInterval(function() {
+      this.keepAliveIntervalId = setInterval(() => {
         var date = new Date();
         console.log(`Current hour of the day is: ${date.getHours()}`);
         if (date.getHours() > 22) {
