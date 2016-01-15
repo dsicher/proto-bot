@@ -93,18 +93,24 @@ protoBot.prototype.addTriggers = function(trigger) {
   }
 }
 
-protoBot.prototype.addTaggedTrigger = function(listenFor, action) {
+protoBot.prototype.addTaggedTrigger = function(listenFor, action, isHidden) {
+  isHidden = isHidden || false;
   if(Array.isArray(listenFor) && typeof action==='function') {
-    this.addTriggers(listenFor);
+    if (!isHidden) {
+      this.addTriggers(listenFor);
+    }
     this.botListener.hears(listenFor, this.taggedMessage, action)
   } else {
     console.log('error: tagged trigger could not be added');
   }
 }
 
-protoBot.prototype.addUntaggedTrigger = function(listenFor, action) {
+protoBot.prototype.addUntaggedTrigger = function(listenFor, action, isHidden) {
+  isHidden = isHidden || false;
   if(Array.isArray(listenFor) && typeof action==='function') {
-    this.addTriggers(listenFor);
+    if (!isHidden) {
+      this.addTriggers(listenFor);
+    }
     this.botListener.hears(listenFor, this.untaggedMessage, action)
   } else {
     console.log('error: untagged trigger could not be added');
