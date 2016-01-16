@@ -8,7 +8,7 @@
 var http = require('http');
 var Botkit = require('botkit');
 
-require('dotenv').load();
+require('dotenv').config({silent: true});
 
 if (!process.env.token) {
   console.log('Error: Specify token in environment');
@@ -44,32 +44,41 @@ var noDoze = () => {
 class ProtoBot {
 
   constructor(config) {
-    this.botName = config.botName || 'proto-bot';
+    this.config = {
+      spawn: true,
+      debug: true
+    };
+
+    Object.assign(this.config, config);
+
+    this.port = process.env.PORT || 8080;
+
+    this.botName = this.config.botName || 'proto-bot';
     this.botTriggers = [];
 
     this.taggedMessage = 'direct_message,direct_mention,mention';
     this.untaggedMessage = 'direct_message,direct_mention,mention,ambient';
 
-    noDoze();
+    if (this.config.spawn) {
+      noDoze();
 
-    this.botListener = Botkit.slackbot({
-      debug: config.debug || true
-    });
+      this.botListener = Botkit.slackbot({
+        debug: this.config.debug
+      });
 
-    this.port = process.env.PORT || 8080;
+      this.botListener.on('tick', () => {});
 
-    this.botListener.on('tick', () => {});
+      this.bot = this.botListener.spawn({
+        token: process.env.token
+      }).startRTM();
 
-    this.bot = this.botListener.spawn({
-      token: process.env.token
-    }).startRTM();
+      this.botListener.setupWebserver(this.port, (err,express_webserver) => {
+        this.botListener.createWebhookEndpoints(express_webserver);
+      });
 
-    this.botListener.setupWebserver(this.port, (err,express_webserver) => {
-      this.botListener.createWebhookEndpoints(express_webserver);
-    });
-
-    this.addUntaggedTrigger(['rise and shine', 'roll call$', 'role call$'], this.rollCall.bind(this));
-    this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
+      this.addUntaggedTrigger(['rise and shine', 'roll call$', 'role call$'], this.rollCall.bind(this));
+      this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
+    }
   }
 
   addTriggers(trigger) {

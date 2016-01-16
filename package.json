@@ -2,15 +2,18 @@
   "name": "proto-bot",
   "version": "0.1.5",
   "description": "A prototype chatbot, using the botkit API",
-  "main": "index.js",
+  "main": "proto_bot.js",
   "repository": "https://github.com/davidsicher/proto-bot",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tape tests/**/*.js",
     "start": "node index.js"
   },
   "author": "",
   "dependencies": {
     "botkit": "0.0.5",
     "dotenv": "^1.2.0"
+  },
+  "devDependencies": {
+    "tape": "^4.4.0"
   }
 }
