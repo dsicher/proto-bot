@@ -76,7 +76,7 @@ class ProtoBot {
         this.botListener.createWebhookEndpoints(express_webserver);
       });
 
-      this.addUntaggedTrigger(['rise and shine', 'roll call$', 'role call$'], this.rollCall.bind(this));
+      this.addUntaggedTrigger(['rise and shine$', 'roll call$', 'role call$'], this.rollCall.bind(this));
       this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
     }
   }
