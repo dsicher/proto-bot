@@ -15,43 +15,18 @@ if (!process.env.token) {
   process.exit(1);
 }
 
-var keepAliveFunc = () => {
-  http.get(process.env.KEEPALIVE_URL, (res) => {
-    console.log(`Keep alive response: ${res.statusCode}`);
-  }).on('error', (e) => {
-    console.log(`Got error: ${e.message}`);
-  });
-}
-
-var noDoze = () => {
-  if (keepAliveIntervalId === undefined) {
-    keepAliveFunc();
-    var keepAliveIntervalId = setInterval(() => {
-      var date = new Date();
-      console.log(`Current hour of the day is: ${date.getHours()}`);
-      if (date.getHours() > 22) {
-        console.log('***********************')
-        console.log('Letting go, sleepy time');
-        console.log('***********************')
-        clearInterval(keepAliveIntervalId)
-      } else {
-        keepAliveFunc();
-      };
-    }, 300000)
-  }
-};
-
 class ProtoBot {
 
   constructor(config) {
     this.config = {
       spawn: true,
-      debug: true
+      debug: true,
+      log: undefined
     };
 
     Object.assign(this.config, config);
 
-    this.port = process.env.PORT || 8080;
+    this.port = this.config.port || process.ENV.port || 8080;
 
     this.botName = this.config.botName || 'proto-bot';
     this.botTriggers = [];
@@ -59,26 +34,25 @@ class ProtoBot {
     this.taggedMessage = 'direct_message,direct_mention,mention';
     this.untaggedMessage = 'direct_message,direct_mention,mention,ambient';
 
-    if (this.config.spawn) {
-      noDoze();
+    this.botListener = Botkit.slackbot({
+      debug: this.config.debug,
+      log: this.config.log
+    });
 
-      this.botListener = Botkit.slackbot({
-        debug: this.config.debug
-      });
+    this.botListener.on('tick', () => {});
 
-      this.botListener.on('tick', () => {});
+    this.bot = this.botListener.spawn({
+      token: process.env.token
+    }).startRTM();
 
-      this.bot = this.botListener.spawn({
-        token: process.env.token
-      }).startRTM();
+    this.botListener.setupWebserver(this.port, (err,express_webserver) => {
+      this.botListener.createWebhookEndpoints(express_webserver);
+    });
 
-      this.botListener.setupWebserver(this.port, (err,express_webserver) => {
-        this.botListener.createWebhookEndpoints(express_webserver);
-      });
+    this.addUntaggedTrigger(['rise and shine$', 'roll call$', 'role call$'], this.rollCall.bind(this));
+    this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
 
-      this.addUntaggedTrigger(['rise and shine$', 'roll call$', 'role call$'], this.rollCall.bind(this));
-      this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
-    }
+    this.noDoze();
   }
 
   addTriggers(trigger) {
@@ -129,9 +103,9 @@ class ProtoBot {
 
   keepAliveFunc() {
     http.get(process.env.KEEPALIVE_URL, (res) => {
-      console.log(`Keep alive response: ${res.statusCode}`);
+      this.botListener.log(`Keep alive response: ${res.statusCode}`);
     }).on('error', (e) => {
-      console.log(`Got error: ${e.message}`);
+      this.botListener.log(`Got error: ${e.message}`);
     });
   }
 
@@ -142,9 +116,9 @@ class ProtoBot {
         var date = new Date();
         console.log(`Current hour of the day is: ${date.getHours()}`);
         if (date.getHours() > 22) {
-          console.log('***********************')
-          console.log('Letting go, sleepy time');
-          console.log('***********************')
+          this.botListener.log('***********************')
+          this.botListener.log('Letting go, sleepy time');
+          this.botListener.log('***********************')
           clearInterval(keepAliveIntervalId)
         } else {
           this.keepAliveFunc();
