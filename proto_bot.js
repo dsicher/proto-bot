@@ -55,6 +55,31 @@ class ProtoBot {
     this.noDoze();
   }
 
+  listenFor(listener) {
+    this.listeningFor = {
+      tagged: this.untaggedMessage,
+      listeners: listener
+    };
+    return this;
+  }
+
+  listenForTagged(listener) {
+    this.listeningFor = {
+      tagged: this.taggedMessage,
+      listeners: listener
+    };
+    return this;
+  }
+
+  andReplyWith(string) {
+    this.addTriggers(this.listeningFor);
+    this.botListener.hears(this.listeningFor.listeners, this.listeningFor.tagged, (bot, message) => {
+      bot.reply(message, string);
+    });
+    this.listeningFor = null;
+    return this;
+  }
+
   addTriggers(trigger) {
     if(Array.isArray(trigger)) {
       trigger.forEach((el)=>{this.addTriggers(el);});
