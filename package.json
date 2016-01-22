@@ -5,8 +5,7 @@
   "main": "proto_bot.js",
   "repository": "https://github.com/davidsicher/proto-bot",
   "scripts": {
-    "test": "tape tests/**/*.js | faucet",
-    "start": "node index.js"
+    "test": "tape tests/**/*.js | faucet"
   },
   "author": "",
   "dependencies": {

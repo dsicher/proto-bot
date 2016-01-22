@@ -24,10 +24,33 @@ test('bot config obj overwrite defaults', t => {
   mattBot.bot.closeRTM();
 });
 
+test('listenFor() is chainable', t => {
+  t.plan(2);
+  var trigger_one = "trigger one";
+  var listenForReturn = testBot.listenFor(trigger_one);
+  t.ok(listenForReturn instanceof ProtoBot, "listenFor should return a bot");
+  t.equal(testBot, listenForReturn, "listenFor should return THE bot");
+});
+
+test('andReplyWith() registers triggers', t => {
+  t.plan(2);
+  var trigger_one = "andReplyWith trigger one",
+      trigger_two = "andReplyWith trigger two";
+
+  testBot.listenFor(trigger_one).andReplyWith('stub');
+  testBot.listenFor(trigger_two).andReplyWith('stub');
+
+  var testBotContainsTrigger = testBot.botTriggers.indexOf(trigger_one);
+  t.ok(testBotContainsTrigger, 'triggers should be added to internal list');
+
+  var testBotContainsTrigger = testBot.botTriggers.indexOf(trigger_two);
+  t.ok(testBotContainsTrigger, 'triggers should be added to internal list');
+});
+
 test('triggers are added to help list during registration', t => {
   t.plan(2);
-  var trigger_one = "trigger one",
-      trigger_two = "trigger two";
+  var trigger_one = "addUntaggerTrigger one",
+      trigger_two = "addUntaggerTrigger two";
 
   testBot.addUntaggedTrigger([trigger_one, trigger_two], (bot, message) => {
     // noop
