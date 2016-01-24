@@ -1,12 +1,9 @@
 'use strict';
-/*-----------------------------------------------------------------------------------------------------------
-//
-//                                        Proto-bot Boilerplate
-//
-//---------------------------------------------------------------------------------------------------------*/
 
 var http = require('http');
 var Botkit = require('botkit');
+var Automatono = require('./lib/Automatono');
+var AutomatonoAdapter = require('./lib/AutomatonoBotkitAdapter');
 
 require('dotenv').config({silent: true});
 
@@ -16,7 +13,6 @@ if (!process.env.token) {
 }
 
 class ProtoBot {
-
   constructor(config) {
     this.config = {
       spawn: true,
@@ -49,10 +45,18 @@ class ProtoBot {
       this.botListener.createWebhookEndpoints(express_webserver);
     });
 
+    this.automatonoAdapter = new AutomatonoAdapter(this.botListener);
+
+    this.ton = new Automatono(this.automatonoAdapter);
+
     this.addUntaggedTrigger(['rise and shine$', 'roll call$', 'role call$'], this.rollCall.bind(this));
     this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
 
     this.noDoze();
+  }
+
+  hears(listenFor) {
+    return this.ton.startConversation(listenFor);
   }
 
   listenFor(listener) {
