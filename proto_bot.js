@@ -2,7 +2,8 @@
 
 var http = require('http');
 var Botkit = require('botkit');
-var AutomatonoBotkit = require('./lib/automatonoBotkitAdapter');
+var AutomatonoAdapter = require('./lib/automatonoBotkitAdapter');
+var Automatono = require('./lib/automatono');
 
 require('dotenv').config({silent: true});
 
@@ -44,7 +45,8 @@ class ProtoBot {
       this.botListener.createWebhookEndpoints(express_webserver);
     });
 
-    this.automatono = new AutomatonoBotkit({ bot: this.botListener, log: this.config.log });
+    this.automatonoAdapter = new AutomatonoAdapter({ bot: this.botListener });
+    this.automatono = new Automatono({ adapter: this.automatonoAdapter, log: this.config.log });
 
     this.addUntaggedTrigger(['rise and shine$', 'roll call$', 'role call$'], this.rollCall.bind(this));
     this.addTaggedTrigger(['help'], this.listFunctions.bind(this));
