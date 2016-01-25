@@ -58,24 +58,26 @@ class ProtoBot {
     return this.automatono.startConversation(listenFor);
   }
 
-  listenFor(listener) {
+  listenFor(listener, isHidden) {
     this.listeningFor = {
       tagged: this.untaggedMessage,
-      listeners: listener
+      listeners: listener,
+      isHidden: isHidden || false
     };
     return this;
   }
 
-  listenForTagged(listener) {
+  listenForTagged(listener, isHidden) {
     this.listeningFor = {
       tagged: this.taggedMessage,
-      listeners: listener
+      listeners: listener,
+      isHidden: isHidden || false
     };
     return this;
   }
 
   andReplyWith(string) {
-    this.addTriggers(this.listeningFor);
+    if (!this.listeningFor.isHidden) { this.addTriggers(this.listeningFor.listeners); }
     this.botListener.hears(this.listeningFor.listeners, this.listeningFor.tagged, (bot, message) => {
       bot.reply(message, string);
     });
