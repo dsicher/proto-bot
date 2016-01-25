@@ -60,15 +60,6 @@ class ProtoBot {
 
   listenFor(listener, isHidden) {
     this.listeningFor = {
-      tagged: this.untaggedMessage,
-      listeners: listener,
-      isHidden: isHidden || false
-    };
-    return this;
-  }
-
-  listenForTagged(listener, isHidden) {
-    this.listeningFor = {
       tagged: this.taggedMessage,
       listeners: listener,
       isHidden: isHidden || false
