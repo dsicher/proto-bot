@@ -22,7 +22,7 @@ class ProtoBot {
 
     Object.assign(this.config, config);
 
-    this.port = this.config.port || process.env.port || 8080;
+    this.port = this.config.port || process.env.PORT || 8080;
 
     this.botName = this.config.botName || 'proto-bot';
     this.botTriggers = [];
