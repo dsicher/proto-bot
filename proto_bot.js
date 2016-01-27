@@ -55,6 +55,7 @@ class ProtoBot {
   }
 
   hears(listenFor) {
+    this.addTriggers(listenFor);
     return this.automatono.startConversation(listenFor);
   }
 
