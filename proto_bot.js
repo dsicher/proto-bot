@@ -54,8 +54,8 @@ class ProtoBot {
     this.noDoze();
   }
 
-  hears(listenFor) {
-    this.addTriggers(listenFor);
+  hears(listenFor, isHidden) {
+    this.addTriggers(listenFor, isHidden);
     return this.automatono.startConversation(listenFor);
   }
 
